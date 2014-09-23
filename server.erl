@@ -1,35 +1,23 @@
 -module(server).
 -include("room.hrl").
--export([start/0,
-         start/1,
-         start/2,
-         stop/1,
-         add_actor/2,
-         add_room/2
+-include("game.hrl").
+-export([start/1,
+         stop/1
         ]).
 
-start() ->
-    start(default_rooms()).
-start(Rooms) ->
-    start(Rooms, default_ai()).
-start(Rooms, Actors) ->
+start(Game) ->
     spawn(fun() ->
-                  server(Rooms, Actors)
+                  server(Game)
           end).
 
 stop(Server) ->
     Server ! terminate.
 
--record(state, {timeout=10,
-               actors=[],
-               rooms=[]}).
-
-server(Rooms, Actors) ->
-    server(#state{rooms=Rooms, actors=Actors}).
-
 server(State) ->
     Timeout = State#state.timeout,
     receive
+        {add_actor, Actor} ->
+            server(add_actor(State, Actor));
         {add_room, Room} ->
             server(add_room(State, Room));
         terminate ->
@@ -39,14 +27,9 @@ server(State) ->
         server(State)
     end.
 
-default_rooms() ->
-    [#room{}].
-
-default_ai() -> [].
-
-add_actor(State, Actor) ->
-    State#state{actors=[Actor|State#state.actors]}.
-
-add_room(State, Room) ->
-    State#state{rooms=[Room|State#state.rooms]}.
+add_actor(Game, Actor) ->
+    NewGame = game:add_actor(Game, Actor),
+    update_actors(NewGame, Actor#actor.room),
+    NewGame.
+    lists:map(fun({Pid, _}) -> Pid ! {add
 

@@ -1,0 +1,3 @@
+-record(actor, {name
+              }).
+
