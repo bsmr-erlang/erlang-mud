@@ -1,3 +1,4 @@
--record(actor, {name
+-record(actor, {name,
+                room
               }).
 

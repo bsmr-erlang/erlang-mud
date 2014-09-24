@@ -9,6 +9,12 @@
 create() ->
     #actor{}.
 
-command(Actor, Command) ->
-    Actor ! {command, Command}.
+move(Actor, Dir) ->
+    Actor ! {move, Dir}.
+
+take(Actor, Thing) ->
+    Actor ! {take, Thing}.
+
+say(Actor, Chat) ->
+    Actor ! {say, Chat}.
 

@@ -1,6 +1,7 @@
 -module(server).
 -include("room.hrl").
 -include("game.hrl").
+-include("actor.hrl").
 -export([start/1,
          stop/1
         ]).
@@ -13,23 +14,30 @@ start(Game) ->
 stop(Server) ->
     Server ! terminate.
 
-server(State) ->
-    Timeout = State#state.timeout,
+server(Game) ->
+    Timeout = Game#state.timeout,
     receive
         {add_actor, Actor} ->
-            server(add_actor(State, Actor));
+            server(add_actor(Game, Actor));
         {add_room, Room} ->
-            server(add_room(State, Room));
+            server(add_room(Game, Room));
         terminate ->
-            State;
-        heartbeat -> server(State)
+            Game;
+        heartbeat -> server(Game)
     after Timeout ->
-        server(State)
+        server(Game)
     end.
+
+add_room(Game, Room) ->
+    RoomPid = room_proc:start(Room),
+    game:add_room(Game, RoomPid).
 
 add_actor(Game, Actor) ->
     NewGame = game:add_actor(Game, Actor),
-    update_actors(NewGame, Actor#actor.room),
+    update_actors(Actor#actor.room),
     NewGame.
-    lists:map(fun({Pid, _}) -> Pid ! {add
+
+update_actors(Room) ->
+    Room ! {update_actors}.
+              
 

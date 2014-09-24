@@ -8,9 +8,9 @@ run() ->
 run_input(Player) ->
     Input = read(),
     case Input of
-        {ok, Command} -> 
-            eval(Player, Command);
-        Unknown -> io:format("unknown input ~s", Unknown)
+        unknown -> io:format("unknown input ~s", Input);
+        Command -> 
+            eval(Player, Command)
     end,
     run_input(Player).
 
@@ -54,7 +54,15 @@ parse(Text) ->
     LText = string:to_lower(Text),
     case LText of
         "north" -> north;
-        "n" -> north
+        "south" -> south;
+        "east" -> east;
+        "west" -> west;
+        "n" -> north;
+        "s" -> south;
+        "e" -> east;
+        "w" -> west;
+        "quit" -> quit;
+        "leave" -> quit
     end .
 
 eval(Player, Command) ->
