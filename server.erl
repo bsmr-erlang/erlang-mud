@@ -2,14 +2,18 @@
 -include("room.hrl").
 -include("game.hrl").
 -include("actor.hrl").
--export([start/1,
+-export([start/0,
+         start/1,
          stop/1
         ]).
 
+start() -> start(new_game()).
 start(Game) ->
     spawn(fun() ->
                   server(Game)
           end).
+
+new_game() -> #state{}.
 
 stop(Server) ->
     Server ! terminate.

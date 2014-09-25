@@ -8,7 +8,7 @@ run() ->
 run_input(Player) ->
     Input = read(),
     case Input of
-        unknown -> io:format("unknown input ~s", Input);
+        unknown -> io:format("unknown input ~s", [Input]);
         Command -> 
             eval(Player, Command)
     end,
@@ -19,7 +19,7 @@ find_game() -> find_game(mud_server).
 
 find_game(Server) ->
     Existing = whereis(Server),
-    if Existing == undefined ->
+    if Existing =:= undefined ->
            start_game(Server);
        true ->
            Existing
@@ -62,7 +62,8 @@ parse(Text) ->
         "e" -> east;
         "w" -> west;
         "quit" -> quit;
-        "leave" -> quit
+        "leave" -> quit;
+        _ -> unknown
     end .
 
 eval(Player, Command) ->
