@@ -1,3 +1,3 @@
 #! /bin/bash
-conttest "clear; erlc *.erl; echo \"compiled on \`date\`\" "
+conttest "clear; erlc +debug_info *.erl; echo \"compiled on \`date\`\" "
 

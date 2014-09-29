@@ -18,9 +18,15 @@ room(Room) ->
         {add_actor, Actor}
           when is_record(Actor, actor)
                -> room(room:add(Room, Actor));
+        {move_actor, Actor, ToRoom} ->
+            case room:remove_actor(Room, Actor) of
+                {error, _} -> room(Room);
+                ChangedRoom -> 
+                    ToRoom ! {add_actor, Actor},
+                    room(ChangedRoom)
+            end;
         {update_actors} ->
-            room:update_actors(Room),
-            room(Room);
+            room(room:update_actors(Room));
         terminate -> ok
     end.
 

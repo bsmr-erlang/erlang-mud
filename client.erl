@@ -3,7 +3,9 @@
 
 run() ->
     Player = join_a_game(),
-    spawn(fun() -> run_input(Player) end).
+    run_input(Player),
+    ok.
+    % spawn(fun() -> run_input(Player) end).
 
 run_input(Player) ->
     Input = read(),
@@ -17,12 +19,14 @@ run_input(Player) ->
 
 find_game() -> find_game(mud_server).
 
+-spec(find_game(atom()) -> pid()).
 find_game(Server) ->
     Existing = whereis(Server),
-    if Existing =:= undefined ->
-           start_game(Server);
-       true ->
-           Existing
+    case Existing of
+        undefined ->
+            start_game(Server);
+        _ ->
+            Existing
     end.
 
 start_game(Server) ->
@@ -32,12 +36,15 @@ start_game(Server) ->
 
 join_a_game() ->
     Game = find_game(),
+    join(Game).
+
+join(Game) ->
     Name = get_name(),
     join(Game, Name).
 
 join(Game, Name) ->
-    Player = actor:create(Name),
-    game:add(Game, Player),
+    Player = actor_proc:start(actor:create(Name)),
+    server:add_actor(Game, Player),
     Player.
 
 get_name() ->
@@ -53,21 +60,21 @@ read() ->
 parse(Text) ->
     LText = string:to_lower(Text),
     case LText of
-        "north" -> north;
-        "south" -> south;
-        "east" -> east;
-        "west" -> west;
-        "n" -> north;
-        "s" -> south;
-        "e" -> east;
-        "w" -> west;
+        "north" -> {move, north};
+        "south" -> {move, south};
+        "east" -> {move, east};
+        "west" -> {move, west};
+        "n" -> {move, north};
+        "s" -> {move, south};
+        "e" -> {move, east};
+        "w" -> {move, west};
         "quit" -> quit;
         "leave" -> quit;
         _ -> unknown
     end .
 
 eval(Player, Command) ->
-    Player ! Command.
+    Player ! {command, self(), Command}.
 
 
 

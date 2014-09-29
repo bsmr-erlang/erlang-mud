@@ -46,6 +46,7 @@ receives:
 
 ?? Who tells the actor where it is?
 - room that added it?
+  - YES. The room that sends out an update will send it out as Actor ! {you_are_in_room, Room} % Room is a record with details of what's there.
 - server that chose which room pid to send it to?
 
 

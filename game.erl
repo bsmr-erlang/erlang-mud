@@ -24,5 +24,5 @@ add_actor(State, Actor) ->
     State#state{actors=[Actor|State#state.actors]}.
 
 add_room(State, Room) ->
-    RoomPid = room:start(Room),
+    RoomPid = room_proc:start(Room),
     State#state{rooms=[RoomPid|State#state.rooms]}.

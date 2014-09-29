@@ -4,7 +4,10 @@
 -include("actor.hrl").
 -export([start/0,
          start/1,
-         stop/1
+         stop/1,
+         add_room/2,
+         add_actor/2,
+         update_actors/1
         ]).
 
 start() -> start(new_game()).
@@ -22,9 +25,9 @@ server(Game) ->
     Timeout = Game#state.timeout,
     receive
         {add_actor, Actor} ->
-            server(add_actor(Game, Actor));
+            server(game:add_actor(Game, Actor));
         {add_room, Room} ->
-            server(add_room(Game, Room));
+            server(game:add_room(Game, Room));
         terminate ->
             Game;
         heartbeat -> server(Game)
@@ -34,12 +37,13 @@ server(Game) ->
 
 add_room(Game, Room) ->
     RoomPid = room_proc:start(Room),
-    game:add_room(Game, RoomPid).
+    Game ! {add_room, RoomPid}.
 
 add_actor(Game, Actor) ->
-    NewGame = game:add_actor(Game, Actor),
-    update_actors(Actor#actor.room),
-    NewGame.
+    Game ! {add_actor, Actor},
+    % NewGame = game:add_actor(Game, Actor),
+    % update_actors(Actor#actor.room),
+    Game.
 
 update_actors(Room) ->
     Room ! {update_actors}.

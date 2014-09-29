@@ -12,8 +12,10 @@ start(Actor) ->
 
 actor(Actor) ->
     receive
-        {move, Dir} ->
-            actor:move(Actor, Dir)
+        {in_room, Room} ->
+            actor(actor:move(Actor, Room));
+        {say, _} ->
+            actor(Actor)
     end.
 
 move(Actor, Dir) ->
