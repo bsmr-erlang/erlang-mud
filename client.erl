@@ -52,7 +52,8 @@ get_name() ->
 
 prompt(Prompt) ->
     Raw = io:get_line(Prompt),
-    hd(string:tokens(Raw, "\n")).
+    %% Odd incantation to strip trailing "\n"s
+    hd(string:tokens(Raw, "\n")++[""]).
 
 read() ->
     parse(prompt("What now> ")).

@@ -8,14 +8,15 @@
         ,say/2]).
 
 start(Actor) ->
-    spawn(fun() -> actor(Actor) end).
+    spawn(fun() -> actor(Actor, self()) end).
 
-actor(Actor) ->
+actor(Actor, Console) ->
     receive
         {in_room, Room} ->
-            actor(actor:move(Actor, Room));
+            Console ! {in_room, Room},
+            actor(actor:move(Actor, Room), Console);
         {say, _} ->
-            actor(Actor)
+            actor(Actor, Console)
     end.
 
 move(Actor, Dir) ->

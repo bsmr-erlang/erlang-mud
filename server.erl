@@ -30,6 +30,8 @@ server(Game) ->
             server(game:add_room(Game, Room));
         terminate ->
             Game;
+        {command, Actor, Command} ->
+            actor_command(Actor, Command);
         heartbeat -> server(Game)
     after Timeout ->
         server(Game)
@@ -47,5 +49,22 @@ add_actor(Game, Actor) ->
 
 update_actors(Room) ->
     Room ! {update_actors}.
-              
+
+actor_command(Actor, Command) ->
+    case Command of
+        quit ->
+            player_quit(Actor);
+        {move, Dir} ->
+            player_move(Actor, Dir);
+        noop -> ok
+    end.
+
+player_quit(ActorPid) ->
+    ActorPid ! terminate,
+    ActorPid#actor.room ! {move_actor_to, self()},
+    ok.
+
+player_move(Actor, Dir) ->
+    Actor#actor.room ! {move_actor, Actor, Dir}.
+
 
