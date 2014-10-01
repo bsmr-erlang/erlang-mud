@@ -6,8 +6,7 @@
          start/1,
          stop/1,
          add_room/2,
-         add_actor/2,
-         update_actors/1
+         add_actor/2
         ]).
 
 start() -> start(new_game()).
@@ -47,9 +46,6 @@ add_actor(Game, Actor) ->
     % update_actors(Actor#actor.room),
     Game.
 
-update_actors(Room) ->
-    Room ! {update_actors}.
-
 actor_command(Actor, Command) ->
     case Command of
         quit ->
@@ -61,10 +57,10 @@ actor_command(Actor, Command) ->
 
 player_quit(ActorPid) ->
     ActorPid ! terminate,
-    ActorPid#actor.room ! {move_actor_to, self()},
     ok.
 
+-spec(player_move(pid(), atom()) -> any()).
 player_move(Actor, Dir) ->
-    Actor#actor.room ! {move_actor, Actor, Dir}.
+    actor_proc:move(Actor, Dir).
 
 

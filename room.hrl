@@ -1,4 +1,5 @@
 -record(room, {text="",
               items=[],
-              actors=[]}).
+              actors=[],
+              exits=[]}).
 

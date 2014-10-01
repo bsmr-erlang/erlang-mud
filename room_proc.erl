@@ -14,16 +14,20 @@ room(Room) ->
     receive
         {add_item, Item}
           when is_record(Item, item)
-               -> room(room:add(Room, Item));
+               -> room(room:add_item(Room, Item));
         {add_actor, Actor}
           when is_record(Actor, actor)
                -> room(room:add(Room, Actor));
-        {move_actor, Actor, ToRoom} ->
-            case room:remove_actor(Room, Actor) of
+        {move_actor, Actor, Dir} ->
+            case room:get_exit(Dir) of
                 {error, _} -> room(Room);
-                ChangedRoom -> 
-                    ToRoom ! {add_actor, Actor},
-                    room(ChangedRoom)
+                ToRoom ->
+                    case room:remove_actor(Room, Actor) of
+                        {error, _} -> room(Room);
+                        ChangedRoom -> 
+                            ToRoom ! {add_actor, Actor},
+                            room(ChangedRoom)
+                    end
             end;
         {update_actors} ->
             room(room:update_actors(Room));

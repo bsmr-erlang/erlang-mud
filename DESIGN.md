@@ -38,9 +38,9 @@ receives:
 # Basic processes
 ## Moving north
 
-- player/ai sends {self(), move, north} to server
-- server looks up room pid by current rom and direction
-- server sends {move_actor_to, new_room_pid, ActorPid} to room
+- player/ai sends {self(), move, north} to it's actor
+    # - server looks up room pid by current rom and direction
+- actor sends {move_actor_to, new_room_pid, ActorPid} to it's room
 - source room receives that, removes player and sends NewRoom!{add_actor, ActorPid}
 - dest room receives this add_Actor and recordsd the new lcoation of the actor.
 

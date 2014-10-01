@@ -10,11 +10,15 @@ run() ->
 run_input(Player) ->
     Input = read(),
     case Input of
-        unknown -> io:format("unknown input ~s", [Input]);
+        unknown ->
+            io:format("unknown input ~s", [Input]),
+            run_input(Player);
+        quit ->
+            eval(Player, quit);
         Command -> 
-            eval(Player, Command)
-    end,
-    run_input(Player).
+            eval(Player, Command),
+            run_input(Player)
+    end.
 
 
 find_game() -> find_game(mud_server).
@@ -53,7 +57,10 @@ get_name() ->
 prompt(Prompt) ->
     Raw = io:get_line(Prompt),
     %% Odd incantation to strip trailing "\n"s
-    hd(string:tokens(Raw, "\n")++[""]).
+    case Raw of
+        "" -> "";
+        _ -> hd(string:tokens(Raw, "\n")++[""])
+    end.
 
 read() ->
     parse(prompt("What now> ")).
